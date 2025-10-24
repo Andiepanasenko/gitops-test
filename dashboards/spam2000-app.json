@@ -1,0 +1,68 @@
+{
+  "dashboard": {
+    "title": "spam2000 Application Monitoring",
+    "tags": ["spam2000", "application"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "HTTP Requests Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{job=\"spam2000\"}[5m]))",
+            "legendFormat": "Requests/sec"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Active Pods",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "count(kube_pod_info{namespace=\"spam2000\"})",
+            "legendFormat": "Active Pods"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Pod CPU Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"spam2000\"}[5m]))",
+            "legendFormat": "CPU Usage"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Pod Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(container_memory_working_set_bytes{namespace=\"spam2000\"})",
+            "legendFormat": "Memory Usage"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Request Latency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"spam2000\"}[5m])) by (le))",
+            "legendFormat": "95th percentile"
+          }
+        ]
+      }
+    ]
+  }
+}
+

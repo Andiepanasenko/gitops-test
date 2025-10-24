@@ -1,0 +1,57 @@
+{
+  "dashboard": {
+    "title": "Kubernetes Cluster Overview",
+    "tags": ["kubernetes", "cluster"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "CPU Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(container_cpu_usage_seconds_total{job=\"kubernetes-cadvisor\"}[5m]))",
+            "legendFormat": "Total CPU"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(container_memory_working_set_bytes{job=\"kubernetes-cadvisor\"})",
+            "legendFormat": "Total Memory"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Pod Status",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "count by (phase) (kube_pod_status_phase)",
+            "legendFormat": "{{phase}}"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Node Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "count(kube_node_info)",
+            "legendFormat": "Total Nodes"
+          }
+        ]
+      }
+    ]
+  }
+}
+

@@ -1,0 +1,143 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  cluster-overview.json: |
+    {
+      "dashboard": {
+        "title": "Kubernetes Cluster Overview",
+        "tags": ["kubernetes", "cluster"],
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "CPU Usage",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+            "targets": [
+              {
+                "expr": "sum(rate(container_cpu_usage_seconds_total{job=\"kubernetes-cadvisor\"}[5m]))",
+                "legendFormat": "Total CPU"
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "title": "Memory Usage",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+            "targets": [
+              {
+                "expr": "sum(container_memory_working_set_bytes{job=\"kubernetes-cadvisor\"})",
+                "legendFormat": "Total Memory"
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Pod Status",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+            "targets": [
+              {
+                "expr": "count by (phase) (kube_pod_status_phase)",
+                "legendFormat": "{{phase}}"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Node Status",
+            "type": "stat",
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+            "targets": [
+              {
+                "expr": "count(kube_node_info)",
+                "legendFormat": "Total Nodes"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  spam2000-app.json: |
+    {
+      "dashboard": {
+        "title": "spam2000 Application Monitoring",
+        "tags": ["spam2000", "application"],
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "HTTP Requests Rate",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+            "targets": [
+              {
+                "expr": "sum(rate(http_requests_total{job=\"spam2000\"}[5m]))",
+                "legendFormat": "Requests/sec"
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "title": "Active Pods",
+            "type": "stat",
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+            "targets": [
+              {
+                "expr": "count(kube_pod_info{namespace=\"spam2000\"})",
+                "legendFormat": "Active Pods"
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Pod CPU Usage",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"spam2000\"}[5m]))",
+                "legendFormat": "CPU Usage"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Pod Memory Usage",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+            "targets": [
+              {
+                "expr": "sum(container_memory_working_set_bytes{namespace=\"spam2000\"})",
+                "legendFormat": "Memory Usage"
+              }
+            ]
+          },
+          {
+            "id": 5,
+            "title": "Request Latency",
+            "type": "graph",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"spam2000\"}[5m])) by (le))",
+                "legendFormat": "95th percentile"
+              }
+            ]
+          }
+        ]
+      }
+    }
+
