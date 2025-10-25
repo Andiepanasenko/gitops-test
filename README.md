@@ -226,11 +226,6 @@ Two pre-configured dashboards are available:
    - Metrics Rate
    - Container Restarts
 
-### Metrics
-
-Application automatically exports metrics in Prometheus format:
-- `random_gauge_1` - Random gauge metric with labels
-- `random_gauge_2` - Random gauge metric with labels
 
 ## Project Structure
 
@@ -253,30 +248,9 @@ gitops-test/
 │   └── grafana-dashboards.yaml       # Grafana dashboards ConfigMap
 │
 └── dashboards/
-    ├── cluster-overview.json          # Cluster overview dashboard
-    ├── spam2000-app.json             # Application dashboard (Golden Signals)
-    ├── system-components.json        # System components dashboard
-    └── victoriametrics-complete.json # VictoriaMetrics dashboard
+    └── spam2000-app.json             # Application dashboard (Golden Signals)
 ```
 
-## Configuration
-
-### Changing spam2000 Parameters
-
-Edit `helm/spam2000/values.yaml`:
-
-```yaml
-replicas: 2                    # Number of application copies
-env:
-  requestRate: "10"            # Request intensity
-resources:
-  requests:
-    memory: "128Mi"
-    cpu: "100m"
-  limits:
-    memory: "256Mi"
-    cpu: "200m"
-```
 
 ### Update via GitOps
 
