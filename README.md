@@ -47,6 +47,17 @@ This project implements a complete GitOps infrastructure that meets all requirem
 - Minimum 6GB RAM available for Docker Desktop (recommended: 8GB)
 - At least 20GB free disk space
 
+**⚠️ Important: Start Docker Desktop before running setup.sh**
+
+If you see "Cannot connect to the Docker daemon" error:
+```bash
+# Start Docker Desktop
+open -a Docker
+
+# Wait 30-60 seconds for Docker to start, then verify:
+docker ps
+```
+
 **Install required tools:**
 
 **For macOS:**
