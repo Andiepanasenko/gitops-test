@@ -41,7 +41,7 @@ This project implements a complete GitOps infrastructure that meets all requirem
 | **GitOps** | ArgoCD | Automatic Git synchronization |
 | **Application** | spam2000 | Application that generates metrics |
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -136,7 +136,7 @@ The script will automatically:
 
 ```
 
-## Access & Credentials
+## 🔐 Access & Credentials
 
 ### ArgoCD (GitOps UI)
 - **URL**: https://localhost:8080
@@ -153,7 +153,7 @@ The script will automatically:
 - **Metrics**: http://localhost:3001/metrics
 - **No authentication required**
 
-## GitOps Workflow
+## 🔄 GitOps Workflow
 
 ### How It Works
 
@@ -182,7 +182,7 @@ The script will automatically:
    kubectl get pods -n spam2000
    ```
 
-## Monitoring
+## 📊 Monitoring
 
 ### Dashboards
 
@@ -267,7 +267,7 @@ git push
 # 3. ArgoCD automatically syncs changes
 ```
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
 ### Check Status
 
