@@ -463,19 +463,7 @@ data:
               "legendFormat": "Running Pods",
               "refId": "B",
               "instant": true
-            },
-                     {
-                       "expr": "count(kube_pod_info{namespace=\"spam2000\"} * on(pod) kube_pod_status_phase{namespace=\"spam2000\", phase=\"Pending\"})",
-                       "legendFormat": "Pending Pods",
-                       "refId": "C",
-                       "instant": true
-                     },
-                     {
-                       "expr": "count(kube_pod_info{namespace=\"spam2000\"} * on(pod) kube_pod_status_phase{namespace=\"spam2000\", phase=\"Failed\"})",
-                       "legendFormat": "Failed Pods",
-                       "refId": "D",
-                       "instant": true
-                     }
+            }
           ],
           "fieldConfig": {
             "defaults": {
@@ -489,19 +477,14 @@ data:
           },
           {
             "id": 2,
-          "title": "OOM Killer & Failed Pods",
+          "title": "Restarting Pods",
           "type": "timeseries",
           "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
             "targets": [
               {
-                       "expr": "count(kube_pod_info{namespace=\"spam2000\"} * on(pod) kube_pod_status_phase{namespace=\"spam2000\", phase=\"Failed\"})",
-                       "legendFormat": "Failed Pods",
+                       "expr": "rate(kube_pod_container_status_restarts_total{container=\"spam2000\"}[5m])",
+                       "legendFormat": "{{pod}}",
                        "refId": "A"
-                     },
-                     {
-                       "expr": "count(kube_pod_status_reason{namespace=\"spam2000\", reason=\"OOMKilled\"})",
-                       "legendFormat": "OOM Killed",
-                       "refId": "B"
                      }
                    ],
           "fieldConfig": {
@@ -637,10 +620,74 @@ data:
           }
         },
         {
-          "id": 4,
-          "title": "CPU Requests vs Limits",
+          "id": 7,
           "type": "timeseries",
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+          "title": "CPU Requests vs Limits",
+          "gridPos": {
+            "x": 12,
+            "y": 20,
+            "h": 8,
+            "w": 12
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "spanNulls": false,
+                "insertNulls": false,
+                "showPoints": "never",
+                "showValues": false,
+                "pointSize": 5,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "axisColorMode": "text",
+                "axisBorderShow": false,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "axisCenteredZero": false,
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false,
+                  "vis": false
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "value": null,
+                    "color": "green"
+                  },
+                  {
+                    "value": 80,
+                    "color": "red"
+                  }
+                ]
+              },
+              "min": 0,
+              "unit": "short"
+            },
+            "overrides": []
+          },
           "targets": [
             {
               "expr": "kube_pod_container_resource_requests{namespace=\"spam2000\", resource=\"cpu\"}",
@@ -652,42 +699,7 @@ data:
               "legendFormat": "{{pod}} - CPU Limit",
               "refId": "B"
             }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineInterpolation": "linear",
-                "barAlignment": 0,
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "spanNulls": false,
-                "insertNulls": false,
-                "showPoints": "never",
-                "pointSize": 5,
-                "stacking": {
-                  "mode": "none",
-                  "group": "A"
-                },
-                "axisPlacement": "auto",
-                "axisLabel": "",
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "vis": false
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              }
-            }
-          }
+          ]
           },
           {
             "id": 5,
@@ -746,7 +758,7 @@ data:
           "id": 6,
           "title": "Container Restarts",
           "type": "timeseries",
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
           "targets": [
             {
               "expr": "rate(container_start_time_seconds{namespace=\"spam2000\"}[5m])",
@@ -757,59 +769,6 @@ data:
           "fieldConfig": {
             "defaults": {
               "unit": "short",
-              "min": 0,
-              "custom": {
-                "drawStyle": "line",
-                "lineInterpolation": "linear",
-                "barAlignment": 0,
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "spanNulls": false,
-                "insertNulls": false,
-                "showPoints": "never",
-                "pointSize": 5,
-                "stacking": {
-                  "mode": "none",
-                  "group": "A"
-                },
-                "axisPlacement": "auto",
-                "axisLabel": "",
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "vis": false
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              }
-            }
-          }
-        },
-        {
-          "id": 7,
-          "title": "Network I/O",
-          "type": "timeseries",
-          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
-          "targets": [
-            {
-              "expr": "rate(container_network_receive_bytes_total{namespace=\"spam2000\"}[5m])",
-              "legendFormat": "{{pod}} - Receive",
-              "refId": "A"
-            },
-            {
-              "expr": "rate(container_network_transmit_bytes_total{namespace=\"spam2000\"}[5m])",
-              "legendFormat": "{{pod}} - Transmit",
-              "refId": "B"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "binBps",
               "min": 0,
               "custom": {
                 "drawStyle": "line",

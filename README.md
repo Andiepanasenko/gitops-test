@@ -1,36 +1,36 @@
-# 🚀 GitOps Infrastructure for spam2000
+# GitOps Infrastructure for spam2000
 
 Complete GitOps infrastructure solution for deploying and monitoring the spam2000 application.
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Tech Stack](#-tech-stack)
-- [Quick Start](#-quick-start)
-- [Architecture](#-architecture)
-- [Access & Credentials](#-access--credentials)
-- [GitOps Workflow](#-gitops-workflow)
-- [Monitoring](#-monitoring)
-- [Project Structure](#-project-structure)
-- [Configuration](#-configuration)
-- [Troubleshooting](#-troubleshooting)
-- [Cleanup](#-cleanup)
-- [Useful Commands](#-useful-commands)
-- [License](#-license)
-- [Author](#-author)
-- [Repository](#-repository)
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
+- [Architecture](#architecture)
+- [Access & Credentials](#access--credentials)
+- [GitOps Workflow](#gitops-workflow)
+- [Monitoring](#monitoring)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [Troubleshooting](#troubleshooting)
+- [Cleanup](#cleanup)
+- [Useful Commands](#useful-commands)
+- [License](#license)
+- [Author](#author)
+- [Repository](#repository)
 
-## 🎯 Overview
+## Overview
 
 This project implements a complete GitOps infrastructure that meets all requirements:
 
-- ✅ **One-command deployment**: `./setup.sh` deploys everything
-- ✅ **GitOps workflow**: ArgoCD automatically syncs changes from Git
-- ✅ **Monitoring system**: VictoriaMetrics + Grafana with pre-configured dashboards
-- ✅ **No errors**: Robust error handling and validation
-- ✅ **Auto-restart port-forward**: Automatically restarts on pod restarts
+- **One-command deployment**: `./setup.sh` deploys everything
+- **GitOps workflow**: ArgoCD automatically syncs changes from Git
+- **Monitoring system**: VictoriaMetrics + Grafana with pre-configured dashboards
+- **No errors**: Robust error handling and validation
+- **Auto-restart port-forward**: Automatically restarts on pod restarts
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Component | Technology | Purpose |
 | --- | --- | --- |
@@ -41,103 +41,83 @@ This project implements a complete GitOps infrastructure that meets all requirem
 | **GitOps** | ArgoCD | Automatic Git synchronization |
 | **Application** | spam2000 | Application that generates metrics |
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-#### 1. System Requirements
-
-- **OS**: macOS or Linux
-- **RAM**: Minimum 6GB available for Docker Desktop (recommended: 8GB)
-- **Disk**: At least 20GB free space
-- **Docker Desktop**: Installed and running (⚠️ REQUIRED for Minikube)
-
-#### 2. Install Required Tools
-
-**macOS:**
-```bash
-# Install Homebrew (if not installed)
+**macOS Installation**
+1. Install Homebrew (if not installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Install tools
+2. Install required tools
 brew install kubectl helm minikube
-
-# Install Docker Desktop
 brew install --cask docker
-```
 
-**Linux:**
-```bash
-# Install kubectl
+3. Start Docker Desktop
+open -a Docker
+
+Verify that Docker is running:
+
+docker ps
+
+4. Start Minikube (optional)
+
+setup.sh will start it automatically if needed.
+
+minikube start --cpus=4 --memory=6144 --disk-size=20g
+minikube status
+
+5. Deploy everything
+git clone https://github.com/Andiepanasenko/gitops-test.git
+cd gitops-test
+./setup.sh
+
+**Linux Installation**
+1. Install kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-# Install Helm
+2. Install Helm
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-# Install Minikube
+3. Install Minikube
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
-# Install Docker
+4. Install Docker
 sudo snap install docker
 sudo systemctl start docker
-```
 
-#### 3. Start Docker Desktop
 
-⚠️ **Important**: Docker Desktop must be running before starting Minikube.
+Verify Docker:
 
-```bash
-# macOS
-open -a Docker
-
-# Linux
-sudo systemctl start docker
-
-# Verify Docker is running
 docker ps
-```
 
-#### 4. Start Minikube (Optional)
-
-You can start Minikube manually or let `setup.sh` do it automatically:
-
-```bash
-# Start Minikube with recommended resources
+5. Start Minikube (optional)
 minikube start --cpus=4 --memory=6144 --disk-size=20g
-
-# Verify Minikube is running
 minikube status
-```
 
-### Installation
-
-```bash
-# Clone the repository
+6. Deploy everything
 git clone https://github.com/Andiepanasenko/gitops-test.git
 cd gitops-test
-
-# Run the setup script (it will deploy everything and start port-forward automatically)
 ./setup.sh
-```
 
 The script will automatically:
-- ✅ Start Minikube cluster
-- ✅ Install ArgoCD for GitOps
-- ✅ Install VictoriaMetrics for monitoring
-- ✅ Install Grafana with pre-configured dashboards
-- ✅ Deploy spam2000 application
-- ✅ Start port-forward for all services with auto-restart
-- ✅ Keep services running until Ctrl+C
+- Start Minikube cluster
+- Install ArgoCD for GitOps
+- Install VictoriaMetrics for monitoring
+- Install Grafana with pre-configured dashboards
+- Deploy spam2000 application
+- Start port-forward for all services with auto-restart
+- Keep services running until Ctrl+C
 
 **Execution time:** ~5-10 minutes
 
-## 🏗 Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     🚀 Minikube Cluster                     │
+│                        Minikube Cluster                     │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌──────────────┐   ┌──────────────--┐ ┌──────────────┐     │
@@ -156,7 +136,7 @@ The script will automatically:
 
 ```
 
-## 🔐 Access & Credentials
+## Access & Credentials
 
 ### ArgoCD (GitOps UI)
 - **URL**: https://localhost:8080
@@ -173,7 +153,7 @@ The script will automatically:
 - **Metrics**: http://localhost:3001/metrics
 - **No authentication required**
 
-## 🔄 GitOps Workflow
+## GitOps Workflow
 
 ### How It Works
 
@@ -202,7 +182,7 @@ The script will automatically:
    kubectl get pods -n spam2000
    ```
 
-## 📊 Monitoring
+## Monitoring
 
 ### Dashboards
 
@@ -229,7 +209,7 @@ Application automatically exports metrics in Prometheus format:
 - `random_gauge_1` - Random gauge metric with labels
 - `random_gauge_2` - Random gauge metric with labels
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 gitops-test/
@@ -250,11 +230,13 @@ gitops-test/
 │   └── grafana-dashboards.yaml       # Grafana dashboards ConfigMap
 │
 └── dashboards/
-    ├── cluster-overview.json          # Cluster dashboard
-    └── spam2000-app.json             # Application dashboard (Golden Signals)
+    ├── cluster-overview.json          # Cluster overview dashboard
+    ├── spam2000-app.json             # Application dashboard (Golden Signals)
+    ├── system-components.json        # System components dashboard
+    └── victoriametrics-complete.json # VictoriaMetrics dashboard
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 ### Changing spam2000 Parameters
 
@@ -285,7 +267,7 @@ git push
 # 3. ArgoCD automatically syncs changes
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Check Status
 
@@ -363,7 +345,7 @@ pkill -f "kubectl port-forward"
 ./setup.sh
 ```
 
-## 🧹 Cleanup
+## Cleanup
 
 ### Remove All Components
 
@@ -372,7 +354,7 @@ pkill -f "kubectl port-forward"
 minikube delete
 ```
 
-## 📝 Useful Commands
+## Useful Commands
 
 ```bash
 # Check pods
@@ -394,18 +376,14 @@ kubectl get applications -n argocd
 kubectl get svc -A
 ```
 
-## 📝 License
+## License
 
 This project was created for DevOps Engineer test assignment.
 
-## 👤 Author
+## Author
 
 Oleksii Panasenko
 
-## 🔗 Repository
+## Repository
 
 - GitHub: https://github.com/Andiepanasenko/gitops-test
-
----
-
-**Good luck with deployment! 🚀**
