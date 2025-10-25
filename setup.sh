@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting GitOps Infrastructure Setup..."
+echo "Starting GitOps Infrastructure Setup..."
 echo ""
 
 # Colors for output
@@ -113,20 +113,20 @@ print_status "Step 8/8: Starting port-forward services..."
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo -e "${BLUE}✨ Setup Complete! ✨${NC}"
+echo -e "${BLUE} Setup Complete! ${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "📊 Access ArgoCD:"
+echo "   Access ArgoCD:"
 echo "   URL: https://localhost:8080"
 echo "   Username: admin"
 echo "   Password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=\"{.data.password}\" | base64 -d"
 echo ""
-echo "📈 Access Grafana:"
+echo "   Access Grafana:"
 echo "   URL: http://localhost:3000"
 echo "   Username: admin"
 echo "   Password: kubectl get secret vm-stack-grafana -n monitoring -o jsonpath=\"{.data.admin-password}\" | base64 -d"
 echo ""
-echo "🚀 Access spam2000:"
+echo "   Access spam2000:"
 echo "   URL: http://localhost:3001"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -157,16 +157,15 @@ sleep 2
 
 echo -e "${GREEN}✓${NC} Port-forwards started with auto-restart!"
 echo ""
-echo "💡 Services are now accessible:"
+echo "   Services are now accessible:"
 echo "   • ArgoCD:  https://localhost:8080"
 echo "   • Grafana: http://localhost:3000"
 echo "   • spam2000: http://localhost:3001"
 echo ""
-echo "⚠️  Press Ctrl+C to stop all port-forwards and exit"
+echo "Press Ctrl+C to stop all port-forwards and exit"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Wait for Ctrl+C
 trap 'echo ""; echo "Stopping port-forwards..."; kill $(jobs -p) 2>/dev/null; exit' INT
 wait
-
