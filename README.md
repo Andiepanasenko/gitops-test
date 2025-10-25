@@ -41,66 +41,89 @@ This project implements a complete GitOps infrastructure that meets all requirem
 | **GitOps** | ArgoCD | Automatic Git synchronization |
 | **Application** | spam2000 | Application that generates metrics |
 
-##  Quick Start
+## Quick Start
 
 ### Prerequisites
 
 **macOS Installation**
 1. Install Homebrew (if not installed)
+```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
 2. Install required tools
+```bash
 brew install kubectl helm minikube
 brew install --cask docker
+```
 
 3. Start Docker Desktop
+```bash
 open -a Docker
+```
 
 Verify that Docker is running:
-
+```bash
 docker ps
+```
 
 4. Start Minikube (optional)
 
 setup.sh will start it automatically if needed.
 
+```bash
 minikube start --cpus=4 --memory=6144 --disk-size=20g
 minikube status
+```
 
 5. Deploy everything
+```bash
 git clone https://github.com/Andiepanasenko/gitops-test.git
 cd gitops-test
 ./setup.sh
+```
 
 **Linux Installation**
 1. Install kubectl
+```bash
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+```
 
 2. Install Helm
+```bash
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+```
 
 3. Install Minikube
+```bash
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
+```
 
 4. Install Docker
+```bash
 sudo snap install docker
 sudo systemctl start docker
-
+```
 
 Verify Docker:
-
+```bash
 docker ps
+```
 
 5. Start Minikube (optional)
+```bash
 minikube start --cpus=4 --memory=6144 --disk-size=20g
 minikube status
+```
 
 6. Deploy everything
+```bash
 git clone https://github.com/Andiepanasenko/gitops-test.git
 cd gitops-test
 ./setup.sh
+```
 
 The script will automatically:
 - Start Minikube cluster
@@ -182,6 +205,32 @@ The script will automatically:
    kubectl get pods -n spam2000
    ```
 
+## 📊 Monitoring
+
+### Dashboards
+
+Two pre-configured dashboards are available:
+
+1. **Kubernetes Cluster Overview**
+   - Node CPU Usage
+   - Node Memory Usage
+   - Pod Status
+   - Cluster Stats
+
+2. **spam2000 Application - Golden Signals**
+   - Total Metrics Generated
+   - Active Pods
+   - Pod Status
+   - Pod CPU Usage
+   - Pod Memory Usage
+   - Metrics Rate
+   - Container Restarts
+
+### Metrics
+
+Application automatically exports metrics in Prometheus format:
+- `random_gauge_1` - Random gauge metric with labels
+- `random_gauge_2` - Random gauge metric with labels
 
 ## Project Structure
 
@@ -210,6 +259,24 @@ gitops-test/
     └── victoriametrics-complete.json # VictoriaMetrics dashboard
 ```
 
+## Configuration
+
+### Changing spam2000 Parameters
+
+Edit `helm/spam2000/values.yaml`:
+
+```yaml
+replicas: 2                    # Number of application copies
+env:
+  requestRate: "10"            # Request intensity
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "200m"
+```
 
 ### Update via GitOps
 
@@ -223,7 +290,7 @@ git push
 # 3. ArgoCD automatically syncs changes
 ```
 
-## 🔧 Troubleshooting
+##  Troubleshooting
 
 ### Check Status
 
