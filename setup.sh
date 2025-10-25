@@ -47,12 +47,39 @@ wait_for_pods() {
     return 0
 }
 
-print_status "Step 1/8: Checking prerequisites..."
+print_status "Step 1/9: Checking prerequisites..."
 command -v kubectl >/dev/null 2>&1 || { print_error "kubectl is required but not installed. Aborting."; exit 1; }
 command -v helm >/dev/null 2>&1 || { print_error "helm is required but not installed. Aborting."; exit 1; }
 command -v minikube >/dev/null 2>&1 || { print_error "minikube is required but not installed. Aborting."; exit 1; }
+command -v docker >/dev/null 2>&1 || { print_error "docker is required but not installed. Aborting."; exit 1; }
 
-print_status "Step 2/8: Starting Minikube..."
+print_status "Step 2/9: Checking Docker Desktop..."
+if ! docker info >/dev/null 2>&1; then
+    print_status "Docker Desktop is not running. Attempting to start..."
+    if command -v open >/dev/null 2>&1; then
+        open -a Docker
+        print_status "Waiting for Docker to start (this may take up to 30 seconds)..."
+        sleep 10
+        local wait_count=0
+        while ! docker info >/dev/null 2>&1 && [ $wait_count -lt 30 ]; do
+            sleep 1
+            wait_count=$((wait_count + 1))
+        done
+        if docker info >/dev/null 2>&1; then
+            print_status "Docker Desktop is now running!"
+        else
+            print_error "Docker failed to start. Please start Docker Desktop manually and try again."
+            exit 1
+        fi
+    else
+        print_error "Docker Desktop is not running. Please start Docker Desktop and try again."
+        exit 1
+    fi
+else
+    print_status "Docker Desktop is running"
+fi
+
+print_status "Step 3/9: Starting Minikube..."
 if ! minikube status >/dev/null 2>&1; then
     print_status "Starting new Minikube cluster..."
     minikube start --cpus=4 --memory=6144 --disk-size=20g
@@ -75,7 +102,7 @@ helm upgrade --install argocd argo/argo-cd \
 
 wait_for_pods argocd 300
 
-print_status "Step 4/8: Installing VictoriaMetrics and Prometheus..."
+print_status "Step 5/9: Installing VictoriaMetrics and Prometheus..."
 kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
 print_status "Adding VictoriaMetrics Helm repository..."
 helm repo add vm https://victoriametrics.github.io/helm-charts/ || print_warning "Repository may already exist"
@@ -89,10 +116,10 @@ helm upgrade --install vm-stack vm/victoria-metrics-k8s-stack \
 
 wait_for_pods monitoring 300
 
-print_status "Step 5/8: Creating spam2000 namespace..."
+print_status "Step 6/9: Creating spam2000 namespace..."
 kubectl create namespace spam2000 --dry-run=client -o yaml | kubectl apply -f -
 
-print_status "Step 6/8: Configuring GitOps with ArgoCD..."
+print_status "Step 7/9: Configuring GitOps with ArgoCD..."
 if [ -f manifests/argocd-app.yaml ]; then
     print_status "Applying ArgoCD Application..."
     kubectl apply -f manifests/argocd-app.yaml || print_warning "ArgoCD application may fail without valid GitHub URL"
@@ -106,14 +133,14 @@ else
     print_warning "ArgoCD application manifest not found"
 fi
 
-print_status "Step 7/8: Configuring Grafana dashboards..."
+print_status "Step 8/9: Configuring Grafana dashboards..."
 kubectl apply -f manifests/grafana-dashboards.yaml
 print_status "Restarting Grafana to load dashboards..."
 kubectl rollout restart deployment/vm-stack-grafana -n monitoring > /dev/null 2>&1
 sleep 5
 wait_for_pods monitoring 60
 
-print_status "Step 8/8: Starting port-forward services..."
+print_status "Step 9/9: Starting port-forward services..."
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
