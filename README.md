@@ -213,9 +213,9 @@ The script will automatically:
 
 The monitoring system is based on the **SRE Golden Signals** methodology, which focuses on four key metrics:
 
-1. **Latency** - Time it takes to serve a request
-2. **Traffic** - Demand being placed on your system
-3. **Errors** - Rate of requests that fail
+1. **Latency**    - Time it takes to serve a request
+2. **Traffic**    - Demand being placed on your system
+3. **Errors**     - Rate of requests that fail
 4. **Saturation** - How "full" your service is
 
 ### Dashboards
