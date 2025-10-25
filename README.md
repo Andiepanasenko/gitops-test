@@ -155,7 +155,7 @@ The script will automatically:
 
 ```
 
-## 🔐 Access & Credentials
+## Access & Credentials
 
 ### ArgoCD (GitOps UI)
 - **URL**: https://localhost:8080
@@ -178,7 +178,7 @@ The script will automatically:
 - **Metrics**: http://localhost:3001/metrics
 - **No authentication required**
 
-## 🔄 GitOps Workflow
+## GitOps Workflow
 
 ### How It Works
 
@@ -207,26 +207,54 @@ The script will automatically:
    kubectl get pods -n spam2000
    ```
 
-## 📊 Monitoring
+## Monitoring
+
+### Golden Signals
+
+The monitoring system is based on the **SRE Golden Signals** methodology, which focuses on four key metrics:
+
+1. **Latency** - Time it takes to serve a request
+2. **Traffic** - Demand being placed on your system
+3. **Errors** - Rate of requests that fail
+4. **Saturation** - How "full" your service is
 
 ### Dashboards
 
 Two pre-configured dashboards are available:
 
-1. **Kubernetes Cluster Overview**
-   - Node CPU Usage
-   - Node Memory Usage
-   - Pod Status
-   - Cluster Stats
+#### 1. Kubernetes Cluster - Golden Signals
 
-2. **spam2000 Application - Golden Signals**
-   - Total Metrics Generated
-   - Active Pods
-   - Pod Status
-   - Pod CPU Usage
-   - Pod Memory Usage
-   - Metrics Rate
-   - Container Restarts
+Comprehensive SRE dashboard with **15 panels** monitoring:
+
+- **Cluster Overview** - Total Nodes, Ready Nodes, Total Pods, Running Pods
+- **Node CPU Usage** - CPU utilization across all nodes
+- **Node Memory Usage** - Memory utilization across all nodes
+- **Pod Status Distribution** - Distribution of pod states (Running, Pending, Failed, etc.)
+- **Container Restart Rate** - Rate of container restarts
+- **Network Traffic** - Total network I/O (receive/transmit)
+- **Disk I/O** - Total disk read/write operations
+- **Pods by Namespace** - Pod count per namespace
+- **CPU Requests vs Limits** - Resource allocation efficiency
+- **Memory Requests vs Limits** - Memory allocation efficiency
+- **Failed Pods** - Count of failed pods
+- **Pending Pods** - Count of pending pods
+- **Running Pods Ratio** - Percentage of pods in Running state
+- **Node Conditions** - Health status of cluster nodes
+- **Node Saturation** - Combined CPU and memory saturation
+
+#### 2. spam2000 Application - Golden Signals
+
+Application-specific monitoring dashboard:
+
+- **Application Overview** - Total Pods, Running Pods
+- **Restarting Pods** - Pod restart rate
+- **Pod CPU Usage** - CPU consumption per pod
+- **Pod Memory Usage** - Memory consumption per pod
+- **CPU Requests vs Limits** - Resource allocation
+- **Memory Requests vs Limits** - Memory allocation
+- **Container Restarts** - Container restart timeline
+- **Spam2000 Application Metrics** - Random gauges
+- **Metrics Count by Country** - Geographic distribution
 
 
 ## Project Structure

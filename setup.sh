@@ -108,6 +108,10 @@ fi
 
 print_status "Step 7/8: Configuring Grafana dashboards..."
 kubectl apply -f manifests/grafana-dashboards.yaml
+print_status "Restarting Grafana to load dashboards..."
+kubectl rollout restart deployment/vm-stack-grafana -n monitoring > /dev/null 2>&1
+sleep 5
+wait_for_pods monitoring 60
 
 print_status "Step 8/8: Starting port-forward services..."
 

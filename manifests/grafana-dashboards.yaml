@@ -367,6 +367,627 @@ data:
         }
       ]
     }
+  kubernetes-cluster.json: |-
+    {
+      "title": "Kubernetes Cluster - Golden Signals",
+      "tags": ["kubernetes", "cluster", "golden-signals"],
+      "timezone": "browser",
+      "schemaVersion": 16,
+      "version": 1,
+      "refresh": "30s",
+      "panels": [
+        {
+          "id": 1,
+          "title": "Cluster Overview",
+          "type": "stat",
+          "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0},
+          "targets": [
+            {
+              "expr": "count(kube_node_info)",
+              "legendFormat": "Total Nodes",
+              "refId": "A",
+              "instant": true
+            },
+            {
+              "expr": "count(kube_node_status_condition{condition=\"Ready\",status=\"true\"})",
+              "legendFormat": "Ready Nodes",
+              "refId": "B",
+              "instant": true
+            },
+            {
+              "expr": "count(kube_pod_info)",
+              "legendFormat": "Total Pods",
+              "refId": "C",
+              "instant": true
+            },
+            {
+              "expr": "count(kube_pod_info * on(pod) kube_pod_status_phase{phase=\"Running\"})",
+              "legendFormat": "Running Pods",
+              "refId": "D",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {
+                "displayMode": "basic",
+                "orientation": "horizontal"
+              }
+            }
+          }
+        },
+        {
+          "id": 2,
+          "title": "Node CPU Usage",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+          "targets": [
+            {
+              "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+              "legendFormat": "{{instance}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "min": 0,
+              "max": 100,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "spanNulls": false,
+                "insertNulls": false,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": 3,
+          "title": "Node Memory Usage",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+          "targets": [
+            {
+              "expr": "100 - ((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100)",
+              "legendFormat": "{{instance}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "min": 0,
+              "max": 100,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "spanNulls": false,
+                "insertNulls": false,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": 4,
+          "title": "Pod Status Distribution",
+          "type": "piechart",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+          "targets": [
+            {
+              "expr": "sum by(phase) (kube_pod_status_phase)",
+              "legendFormat": "{{phase}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": 5,
+          "title": "Container Restart Rate",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+          "targets": [
+            {
+              "expr": "sum(rate(container_last_seen{name!=\"\"}[5m]))",
+              "legendFormat": "Restart Rate",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "spanNulls": false,
+                "insertNulls": false,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": 6,
+          "title": "Network Traffic (Total)",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+          "targets": [
+            {
+              "expr": "sum(rate(node_network_receive_bytes_total[5m]))",
+              "legendFormat": "Receive",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(rate(node_network_transmit_bytes_total[5m]))",
+              "legendFormat": "Transmit",
+              "refId": "B"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "binBps",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "spanNulls": false,
+                "insertNulls": false,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": 7,
+          "title": "Disk I/O (Total)",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+          "targets": [
+            {
+              "expr": "sum(rate(node_disk_read_bytes_total[5m]))",
+              "legendFormat": "Read",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(rate(node_disk_written_bytes_total[5m]))",
+              "legendFormat": "Write",
+              "refId": "B"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "binBps",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "spanNulls": false,
+                "insertNulls": false,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": 8,
+          "title": "Pods by Namespace",
+          "type": "bargauge",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 28},
+          "targets": [
+            {
+              "expr": "count by(namespace) (kube_pod_info)",
+              "legendFormat": "{{namespace}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": 9,
+          "title": "CPU Requests vs Limits",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 28},
+          "targets": [
+            {
+              "expr": "sum(kube_pod_container_resource_requests{resource=\"cpu\"})",
+              "legendFormat": "CPU Requests",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(kube_pod_container_resource_limits{resource=\"cpu\"})",
+              "legendFormat": "CPU Limits",
+              "refId": "B"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "spanNulls": false,
+                "insertNulls": false,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": 10,
+          "title": "Memory Requests vs Limits",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 36},
+          "targets": [
+            {
+              "expr": "sum(kube_pod_container_resource_requests{resource=\"memory\"})",
+              "legendFormat": "Memory Requests",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(kube_pod_container_resource_limits{resource=\"memory\"})",
+              "legendFormat": "Memory Limits",
+              "refId": "B"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "min": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "spanNulls": false,
+                "insertNulls": false,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": 11,
+          "title": "Failed Pods",
+          "type": "stat",
+          "gridPos": {"h": 4, "w": 12, "x": 12, "y": 36},
+          "targets": [
+            {
+              "expr": "sum(kube_pod_status_phase{phase=\"Failed\"})",
+              "legendFormat": "Failed",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "steps": [
+                  {"value": null, "color": "green"},
+                  {"value": 1, "color": "red"}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 12,
+          "title": "Pending Pods",
+          "type": "stat",
+          "gridPos": {"h": 4, "w": 12, "x": 12, "y": 40},
+          "targets": [
+            {
+              "expr": "sum(kube_pod_status_phase{phase=\"Pending\"})",
+              "legendFormat": "Pending",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "steps": [
+                  {"value": null, "color": "green"},
+                  {"value": 1, "color": "yellow"}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 13,
+          "title": "Pod Ready/Not Ready Ratio",
+          "type": "gauge",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 44},
+          "targets": [
+            {
+              "expr": "100 * (sum(kube_pod_status_phase{phase=\"Running\"}) / sum(kube_pod_status_phase))",
+              "legendFormat": "Running Pods %",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "min": 0,
+              "max": 100,
+              "thresholds": {
+                "steps": [
+                  {"value": null, "color": "red"},
+                  {"value": 80, "color": "yellow"},
+                  {"value": 95, "color": "green"}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 14,
+          "title": "Node Conditions",
+          "type": "heatmap",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 44},
+          "targets": [
+            {
+              "expr": "sum by(condition, status) (kube_node_status_condition)",
+              "legendFormat": "{{condition}} - {{status}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "tooltip": false,
+                  "viz": false,
+                  "legend": false
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": 15,
+          "title": "Node Saturation (CPU + Memory)",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 24, "x": 0, "y": 52},
+          "targets": [
+            {
+              "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+              "legendFormat": "{{instance}} - CPU",
+              "refId": "A"
+            },
+            {
+              "expr": "100 - ((avg by(instance) (node_memory_MemAvailable_bytes)) / avg by(instance) (node_memory_MemTotal_bytes) * 100)",
+              "legendFormat": "{{instance}} - Memory",
+              "refId": "B"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "min": 0,
+              "max": 100,
+              "thresholds": {
+                "steps": [
+                  {"value": null, "color": "green"},
+                  {"value": 70, "color": "yellow"},
+                  {"value": 85, "color": "red"}
+                ]
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "spanNulls": false,
+                "insertNulls": false,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "thresholdsStyle": {
+                  "mode": "line"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
 kind: ConfigMap
 metadata:
   name: grafana-dashboards
