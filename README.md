@@ -4,17 +4,21 @@ Complete GitOps infrastructure solution for deploying and monitoring the spam200
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Tech Stack](#tech-stack)
-- [Quick Start](#quick-start)
-- [Architecture](#architecture)
-- [Access & Credentials](#access--credentials)
-- [GitOps Workflow](#gitops-workflow)
-- [Monitoring](#monitoring)
-- [Project Structure](#project-structure)
-- [Configuration](#configuration)
-- [Troubleshooting](#troubleshooting)
-- [Cleanup](#cleanup)
+- [Overview](#-overview)
+- [Tech Stack](#-tech-stack)
+- [Quick Start](#-quick-start)
+- [Architecture](#-architecture)
+- [Access & Credentials](#-access--credentials)
+- [GitOps Workflow](#-gitops-workflow)
+- [Monitoring](#-monitoring)
+- [Project Structure](#-project-structure)
+- [Configuration](#-configuration)
+- [Troubleshooting](#-troubleshooting)
+- [Cleanup](#-cleanup)
+- [Useful Commands](#-useful-commands)
+- [License](#-license)
+- [Author](#-author)
+- [Repository](#-repository)
 
 ## 🎯 Overview
 
@@ -41,38 +45,28 @@ This project implements a complete GitOps infrastructure that meets all requirem
 
 ### Prerequisites
 
-**System Requirements:**
-- macOS or Linux
-- **Docker Desktop installed and running** (⚠️ REQUIRED for Minikube)
-- Minimum 6GB RAM available for Docker Desktop (recommended: 8GB)
-- At least 20GB free disk space
+#### 1. System Requirements
 
-**⚠️ Important: Start Docker Desktop before running setup.sh**
+- **OS**: macOS or Linux
+- **RAM**: Minimum 6GB available for Docker Desktop (recommended: 8GB)
+- **Disk**: At least 20GB free space
+- **Docker Desktop**: Installed and running (⚠️ REQUIRED for Minikube)
 
-If you see "Cannot connect to the Docker daemon" error:
+#### 2. Install Required Tools
+
+**macOS:**
 ```bash
-# Start Docker Desktop
-open -a Docker
-
-# Wait 30-60 seconds for Docker to start, then verify:
-docker ps
-```
-
-**Install required tools:**
-
-**For macOS:**
-```bash
-# Install Homebrew if not already installed
+# Install Homebrew (if not installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Install required tools
+# Install tools
 brew install kubectl helm minikube
 
 # Install Docker Desktop
 brew install --cask docker
 ```
 
-**For Linux:**
+**Linux:**
 ```bash
 # Install kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -85,13 +79,36 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
-# Install Docker Desktop
-# Download from: https://www.docker.com/products/docker-desktop
-# Or use snap:
+# Install Docker
 sudo snap install docker
-
-# Start Docker Desktop
 sudo systemctl start docker
+```
+
+#### 3. Start Docker Desktop
+
+⚠️ **Important**: Docker Desktop must be running before starting Minikube.
+
+```bash
+# macOS
+open -a Docker
+
+# Linux
+sudo systemctl start docker
+
+# Verify Docker is running
+docker ps
+```
+
+#### 4. Start Minikube (Optional)
+
+You can start Minikube manually or let `setup.sh` do it automatically:
+
+```bash
+# Start Minikube with recommended resources
+minikube start --cpus=4 --memory=6144 --disk-size=20g
+
+# Verify Minikube is running
+minikube status
 ```
 
 ### Installation
