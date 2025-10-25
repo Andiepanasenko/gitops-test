@@ -55,7 +55,7 @@ command -v minikube >/dev/null 2>&1 || { print_error "minikube is required but n
 print_status "Step 2/8: Starting Minikube..."
 if ! minikube status >/dev/null 2>&1; then
     print_status "Starting new Minikube cluster..."
-    minikube start --cpus=4 --memory=8192 --disk-size=20g
+    minikube start --cpus=4 --memory=6144 --disk-size=20g
 else
     print_status "Minikube is already running"
 fi
