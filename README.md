@@ -41,9 +41,46 @@ This project implements a complete GitOps infrastructure that meets all requirem
 
 ### Prerequisites
 
+**System Requirements:**
+- macOS or Linux
+- **Docker Desktop installed and running** (⚠️ REQUIRED for Minikube)
+- Minimum 6GB RAM available for Docker Desktop (recommended: 8GB)
+- At least 20GB free disk space
+
+**Install required tools:**
+
+**For macOS:**
 ```bash
+# Install Homebrew if not already installed
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
 # Install required tools
 brew install kubectl helm minikube
+
+# Install Docker Desktop
+brew install --cask docker
+```
+
+**For Linux:**
+```bash
+# Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+# Install Helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# Install Minikube
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+# Install Docker Desktop
+# Download from: https://www.docker.com/products/docker-desktop
+# Or use snap:
+sudo snap install docker
+
+# Start Docker Desktop
+sudo systemctl start docker
 ```
 
 ### Installation
@@ -72,18 +109,18 @@ The script will automatically:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     🚀 Minikube Cluster                      │
+│                     🚀 Minikube Cluster                     │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐     │
-│  │   ArgoCD     │   │ VictoriaMetrics │  │   Grafana    │   │
-│  │   (GitOps)   │   │   (Metrics DB) │  │ (Dashboards) │    │
-│  └──────────────┘   └──────────────┘   └──────────────┘     │
+│  ┌──────────────┐   ┌──────────────--┐ ┌──────────────┐     │
+│  │   ArgoCD     │   │ VictoriaMetrics│ │   Grafana    │     │
+│  │   (GitOps)   │   │   (Metrics DB) │ │ (Dashboards) │     │
+│  └──────────────┘   └──────────────--┘ └──────────────┘     │
 │                                                             │
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │               spam2000 Application                    │  │
 │  │  ┌──────────┐   ┌──────────┐   ┌──────────┐           │  │
-│  │  │  Pod 1   │   │  Pod 2   │   │  Pod 3   │           │  │
+│  │  │  Pod 1   │   │  Pod 2   │   │    N     │           │  │
 │  │  └──────────┘   └──────────┘   └──────────┘           │  │
 │  └───────────────────────────────────────────────────────┘  │
 │                                                             │
@@ -259,6 +296,32 @@ kubectl rollout restart deployment/argocd-server -n argocd
 # Grafana
 kubectl rollout restart deployment/vm-stack-grafana -n monitoring
 ```
+
+### Memory Issues with Docker Desktop
+
+If Minikube is being killed due to memory issues:
+
+1. **Increase Docker Desktop memory:**
+   - Open Docker Desktop
+   - Go to Settings → Resources → Advanced
+   - Increase Memory to at least 6GB (recommended: 8GB)
+   - Click "Apply & Restart"
+
+2. **Stop unnecessary containers:**
+   ```bash
+   docker ps
+   docker stop <container_id>
+   ```
+
+3. **Alternative: Use different Minikube driver:**
+   ```bash
+   # Stop current Minikube
+   minikube stop
+   minikube delete
+   
+   # Start with VirtualBox (requires VirtualBox installed)
+   minikube start --driver=virtualbox --cpus=2 --memory=4096
+   ```
 
 ### Port-Forward Issues
 
