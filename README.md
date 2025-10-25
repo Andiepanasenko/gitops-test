@@ -1,30 +1,74 @@
-# 🚀 GitOps Infrastructure для spam2000
+# 🚀 GitOps Infrastructure for spam2000
 
-Цей проект містить повну GitOps інфраструктуру для розгортання додатку spam2000 з системою моніторингу.
+Complete GitOps infrastructure solution for deploying and monitoring the spam2000 application.
 
-## 📋 Вміст
+## 📋 Table of Contents
 
-- [Технічний стек](#технічний-стек)
-- [Архітектура](#архітектура)
-- [Вимоги](#вимоги)
-- [Встановлення](#встановлення)
-- [Використання](#використання)
-- [GitOps](#gitops)
-- [Моніторинг](#моніторинг)
-- [Структура проекту](#структура-проекту)
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
+- [Architecture](#architecture)
+- [Access & Credentials](#access--credentials)
+- [GitOps Workflow](#gitops-workflow)
+- [Monitoring](#monitoring)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [Troubleshooting](#troubleshooting)
+- [Cleanup](#cleanup)
 
-## 🛠 Технічний стек
+## 🎯 Overview
 
-| Компонент | Технологія | Призначення |
+This project implements a complete GitOps infrastructure that meets all requirements:
+
+- ✅ **One-command deployment**: `./setup.sh` deploys everything
+- ✅ **GitOps workflow**: ArgoCD automatically syncs changes from Git
+- ✅ **Monitoring system**: VictoriaMetrics + Grafana with pre-configured dashboards
+- ✅ **No errors**: Robust error handling and validation
+- ✅ **Auto-restart port-forward**: Automatically restarts on pod restarts
+
+## 🛠 Tech Stack
+
+| Component | Technology | Purpose |
 | --- | --- | --- |
-| **Orchestration** | Minikube | Локальний Kubernetes кластер |
-| **Monitoring** | VictoriaMetrics | Збір та зберігання метрик |
-| **Visualization** | Grafana | Дашборди та візуалізація |
-| **Package Manager** | Helm | Управління Kubernetes застосунками |
-| **GitOps** | ArgoCD | Автоматичне синхронізування з Git |
-| **Application** | spam2000 | Додаток який генерує метрики |
+| **Orchestration** | Minikube | Local Kubernetes cluster |
+| **Monitoring** | VictoriaMetrics | Metrics collection and storage |
+| **Visualization** | Grafana | Dashboards and visualization |
+| **Package Manager** | Helm | Kubernetes application management |
+| **GitOps** | ArgoCD | Automatic Git synchronization |
+| **Application** | spam2000 | Application that generates metrics |
 
-## 🏗 Архітектура
+## 🚀 Quick Start
+
+### Prerequisites
+
+```bash
+# Install required tools
+brew install kubectl helm minikube
+```
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/Andiepanasenko/gitops-test.git
+cd gitops-test
+
+# Run the setup script (it will deploy everything and start port-forward automatically)
+./setup.sh
+```
+
+The script will automatically:
+- ✅ Start Minikube cluster
+- ✅ Install ArgoCD for GitOps
+- ✅ Install VictoriaMetrics for monitoring
+- ✅ Install Grafana with pre-configured dashboards
+- ✅ Deploy spam2000 application
+- ✅ Start port-forward for all services with auto-restart
+- ✅ Keep services running until Ctrl+C
+
+**Execution time:** ~5-10 minutes
+
+## 🏗 Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -46,234 +90,114 @@
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## ✅ Вимоги
+## 🔐 Access & Credentials
 
-Перед початком встановлення переконайтеся, що у вас встановлено:
+### ArgoCD (GitOps UI)
+- **URL**: https://localhost:8080
+- **Username**: `admin`
+- **Password**: `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d`
 
-- **kubectl** >= 1.24
-- **helm** >= 3.8
-- **minikube** >= 1.28
-- **git** (для клонування репозиторію)
+### Grafana (Monitoring)
+- **URL**: http://localhost:3000
+- **Username**: `admin`
+- **Password**: `kubectl get secret vm-stack-grafana -n monitoring -o jsonpath="{.data.admin-password}" | base64 -d`
 
-### Перевірка вимог
+### spam2000 Application
+- **URL**: http://localhost:3001
+- **Metrics**: http://localhost:3001/metrics
+- **No authentication required**
 
-```bash
-kubectl version --client
-helm version
-minikube version
-```
+## 🔄 GitOps Workflow
 
-## 🚀 Встановлення
+### How It Works
 
-### 1. Клонуйте репозиторій
+1. ArgoCD monitors your Git repository
+2. When configuration changes in Git, ArgoCD automatically syncs changes
+3. Kubernetes resources are updated automatically
 
-```bash
-git clone https://github.com/Andiepanasenko/gitops-test.git
-cd gitops-test
-```
+### Testing GitOps
 
-### 2. Запустіть скрипт встановлення
-
-```bash
-./setup.sh
-```
-
-Цей скрипт автоматично виконає всі необхідні кроки:
-- ✅ Запустить Minikube кластер
-- ✅ Встановить ArgoCD для GitOps
-- ✅ Встановить VictoriaMetrics для моніторингу
-- ✅ Встановить Grafana з попередньо налаштованими дашбордами
-- ✅ Розгорне spam2000 додаток
-- ✅ Налаштує GitOps синхронізацію
-
-**Час виконання:** ~5-10 хвилин
-
-## 📖 Використання
-
-### Доступ до ArgoCD (GitOps UI)
-
-```bash
-kubectl port-forward svc/argocd-server -n argocd 8080:443
-```
-
-- URL: https://localhost:8080
-- Username: `admin`
-- Password: (отримайте командою нижче)
-
-```bash
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-
-### Доступ до Grafana
-
-```bash
-kubectl port-forward svc/grafana -n monitoring 3000:80
-```
-
-- URL: http://localhost:3000
-- Username: `admin`
-- Password: `admin`
-
-### Доступ до додатку spam2000
-
-```bash
-kubectl port-forward svc/spam2000 -n spam2000 3000:80
-```
-
-- URL: http://localhost:3000
-- Метрики: http://localhost:3000/metrics
-
-### Перевірка статусу додатку
-
-```bash
-# Перевірка pod'ів
-kubectl get pods -n spam2000
-
-# Перевірка сервісів
-kubectl get svc -n spam2000
-
-# Перевірка всіх ресурсів
-kubectl get all -n spam2000
-```
-
-### Перевірка моніторингу
-
-```bash
-# Перевірка VictoriaMetrics
-kubectl get pods -n monitoring
-
-# Перевірка Grafana
-kubectl get pods -n monitoring | grep grafana
-
-# Перевірка метрик
-kubectl port-forward svc/victoria-metrics-k8s-stack-victoria-metrics -n monitoring 8428:8428
-curl http://localhost:8428/metrics
-```
-
-## 🔄 GitOps
-
-### Налаштування GitOps після створення репозиторію
-
-1. **Оновіть URL в манифесті:**
-   ```bash
-   # Відредагуйте файл manifests/argocd-app.yaml
-   # Замініть Andiepanasenko/gitops-test якщо потрібно
-   ```
-
-2. **Створіть репозиторій на GitHub:**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: GitOps infrastructure"
-   git remote add origin https://github.com/Andiepanasenko/gitops-test.git
-   git push -u origin main
-   ```
-
-3. **Застосуйте ArgoCD Application:**
-   ```bash
-   kubectl apply -f manifests/argocd-app.yaml
-   ```
-
-4. **Перевірте в ArgoCD UI:**
-   - Відкрийте https://localhost:8080
-   - Зайдіть як admin
-   - Перевірте статус додатку
-
-### Як працює GitOps
-
-1. ArgoCD моніторить ваш Git репозиторій
-2. При зміні конфігурації в Git, ArgoCD автоматично синхронізує зміни
-3. Kubernetes ресурси оновлюються автоматично
-
-### Тестування GitOps
-
-1. Відредагуйте `helm/spam2000/values.yaml`:
+1. Edit `helm/spam2000/values.yaml`:
    ```yaml
-   replicas: 3  # Змініть з 2 на 3
+   replicas: 3  # Change from 2 to 3
    ```
 
-2. Закомітьте зміни:
+2. Commit and push:
    ```bash
    git add helm/spam2000/values.yaml
-   git commit -m "Scale spam2000 to 3 replicas"
+   git commit -m "Scale to 3 replicas"
    git push
    ```
 
-3. ArgoCD автоматично виявить зміни та оновить deployment
+3. ArgoCD will automatically detect changes and update deployment
 
-4. Перевірте в ArgoCD UI або командою:
+4. Check in ArgoCD UI or with command:
    ```bash
    kubectl get pods -n spam2000
    ```
 
-### Manual синхронізація
+## 📊 Monitoring
 
-```bash
-# Через UI ArgoCD або CLI
-argocd app sync spam2000-app
-```
+### Dashboards
 
-## 📊 Моніторинг
+Two pre-configured dashboards are available:
 
-### Дашборди Grafana
-
-Після запуску ви отримаєте два готові дашборди:
-
-1. **Kubernetes Cluster Overview** - моніторинг кластера
-   - CPU Usage
-   - Memory Usage
+1. **Kubernetes Cluster Overview**
+   - Node CPU Usage
+   - Node Memory Usage
    - Pod Status
-   - Node Status
+   - Cluster Stats
 
-2. **spam2000 Application Monitoring** - моніторинг додатку
-   - HTTP Requests Rate
+2. **spam2000 Application - Golden Signals**
+   - Total Metrics Generated
    - Active Pods
+   - Pod Status
    - Pod CPU Usage
    - Pod Memory Usage
-   - Request Latency
+   - Metrics Rate
+   - Container Restarts
 
-### Метрики spam2000
+### Metrics
 
-Додаток автоматично експортує метрики в Prometheus формат:
-- `http_requests_total` - кількість HTTP запитів
-- `http_request_duration_seconds` - затримка запитів
+Application automatically exports metrics in Prometheus format:
+- `random_gauge_1` - Random gauge metric with labels
+- `random_gauge_2` - Random gauge metric with labels
 
-## 📁 Структура проекту
+## 📁 Project Structure
 
 ```
-pdffiller-infra/
-├── setup.sh                          # Основний скрипт встановлення
-├── README.md                          # Ця документація
-├── main.py                            # Старий файл (можна видалити)
+gitops-test/
+├── setup.sh                          # Main deployment script
+├── status.sh                          # Status check utility
+├── README.md                          # This documentation
 │
-├── helm/                              # Helm charts
+├── helm/
 │   └── spam2000/
-│       ├── Chart.yaml                 # Опис chart'у
-│       ├── values.yaml                # Конфігурація за замовчуванням
+│       ├── Chart.yaml                 # Helm chart metadata
+│       ├── values.yaml                # Default configuration
 │       └── templates/
 │           ├── deployment.yaml        # Kubernetes Deployment
-│           ├── service.yaml           # Kubernetes Service
-│           └── servicemonitor.yaml   # Prometheus ServiceMonitor
+│           └── service.yaml           # Kubernetes Service
 │
-├── manifests/                         # Kubernetes manifests
+├── manifests/
 │   ├── argocd-app.yaml               # ArgoCD Application
 │   └── grafana-dashboards.yaml       # Grafana dashboards ConfigMap
 │
-└── dashboards/                        # JSON файли дашбордів
-    ├── cluster-overview.json          # Dashboard для кластера
-    └── spam2000-app.json             # Dashboard для додатку
+└── dashboards/
+    ├── cluster-overview.json          # Cluster dashboard
+    └── spam2000-app.json             # Application dashboard (Golden Signals)
 ```
 
-## ⚙️ Конфігурація
+## ⚙️ Configuration
 
-### Зміна параметрів spam2000
+### Changing spam2000 Parameters
 
-Відредагуйте `helm/spam2000/values.yaml`:
+Edit `helm/spam2000/values.yaml`:
 
 ```yaml
-replicas: 2                    # Кількість копій додатку
+replicas: 2                    # Number of application copies
 env:
-  requestRate: "10"            # Інтенсивність запитів
+  requestRate: "10"            # Request intensity
 resources:
   requests:
     memory: "128Mi"
@@ -283,96 +207,113 @@ resources:
     cpu: "200m"
 ```
 
-### Оновлення через GitOps
+### Update via GitOps
 
 ```bash
-# 1. Змініть values.yaml
-# 2. Коміт та push
+# 1. Change values.yaml
+# 2. Commit and push
 git add helm/spam2000/values.yaml
 git commit -m "Update spam2000 configuration"
 git push
 
-# 3. ArgoCD автоматично синхронізує зміни
-```
-
-## 🧹 Очищення
-
-### Видалення всіх компонентів
-
-```bash
-# Видалення ArgoCD
-helm uninstall argocd -n argocd
-kubectl delete namespace argocd
-
-# Видалення spam2000
-helm uninstall spam2000 -n spam2000
-kubectl delete namespace spam2000
-
-# Видалення моніторингу
-helm uninstall victoria-metrics -n monitoring
-helm uninstall grafana -n monitoring
-kubectl delete namespace monitoring
-
-# Зупинка Minikube
-minikube stop
-minikube delete
-```
-
-### Повне очищення
-
-```bash
-minikube delete
+# 3. ArgoCD automatically syncs changes
 ```
 
 ## 🐛 Troubleshooting
 
-### Проблеми з Minikube
+### Check Status
 
 ```bash
-# Перевірка статусу
-minikube status
-
-# Перезапуск
-minikube stop
-minikube start
-
-# Перегляд логів
-minikube logs
+./status.sh
 ```
 
-### Проблеми з подами
+### Check Pods
 
 ```bash
-# Перевірка логів
-kubectl logs -n spam2000 <pod-name>
+kubectl get pods -A
+```
 
-# Опис пода
-kubectl describe pod -n spam2000 <pod-name>
+### Check Logs
 
-# Перезапуск додатку
+```bash
+# spam2000
+kubectl logs -n spam2000 -l app=spam2000 --tail=100
+
+# ArgoCD
+kubectl logs -n argocd argocd-server-xxx
+
+# Grafana
+kubectl logs -n monitoring vm-stack-grafana-xxx
+```
+
+### Restart Services
+
+```bash
+# spam2000
 kubectl rollout restart deployment/spam2000 -n spam2000
+
+# ArgoCD
+kubectl rollout restart deployment/argocd-server -n argocd
+
+# Grafana
+kubectl rollout restart deployment/vm-stack-grafana -n monitoring
 ```
 
-### Проблеми з метриками
+### Port-Forward Issues
+
+If port-forward stops working, restart it:
 
 ```bash
-# Перевірка ServiceMonitor
-kubectl get servicemonitor -n spam2000
+# Kill existing port-forwards
+pkill -f "kubectl port-forward"
 
-# Перевірка метрик
-kubectl port-forward svc/spam2000 -n spam2000 8080:80
-curl http://localhost:8080/metrics
+# Restart setup script
+./setup.sh
 ```
 
-## 📝 Ліцензія
+## 🧹 Cleanup
 
-Цей проект створено для тестового завдання DevOps Engineer.
+### Remove All Components
 
-## 👤 Автор
+```bash
+# Stop Minikube (removes everything)
+minikube delete
+```
 
-Ваше ім'я
+## 📝 Useful Commands
+
+```bash
+# Check pods
+kubectl get pods -A
+
+# Check helm releases
+helm list -A
+
+# Check application logs
+kubectl logs -n spam2000 -l app=spam2000
+
+# Restart application
+kubectl rollout restart deployment/spam2000 -n spam2000
+
+# Check ArgoCD applications
+kubectl get applications -n argocd
+
+# Check services
+kubectl get svc -A
+```
+
+## 📝 License
+
+This project was created for DevOps Engineer test assignment.
+
+## 👤 Author
+
+Oleksii Panasenko
+
+## 🔗 Repository
+
+- GitHub: https://github.com/Andiepanasenko/gitops-test
 
 ---
 
-**Успіхів з розгортанням! 🚀**
-
+**Good luck with deployment! 🚀**

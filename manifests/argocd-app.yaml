@@ -6,7 +6,6 @@ metadata:
 spec:
   project: default
   source:
-    # ⚠️ IMPORTANT: Update this URL with your actual GitHub repository URL
     repoURL: https://github.com/Andiepanasenko/gitops-test.git
     targetRevision: HEAD
     path: helm/spam2000
@@ -22,6 +21,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
+      allowEmpty: false
     syncOptions:
     - CreateNamespace=true
-
+    - ServerSideApply=true
+  revisionHistoryLimit: 3

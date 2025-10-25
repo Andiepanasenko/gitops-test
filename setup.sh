@@ -81,7 +81,7 @@ print_status "Adding VictoriaMetrics Helm repository..."
 helm repo add vm https://victoriametrics.github.io/helm-charts/ || print_warning "Repository may already exist"
 helm repo update
 print_status "Installing VictoriaMetrics..."
-helm upgrade --install victoria-metrics vm/victoria-metrics-k8s-stack \
+helm upgrade --install vm-stack vm/victoria-metrics-k8s-stack \
     --namespace monitoring \
     --set victoria-metrics-k8s-stack.prometheus.enabled=true \
     --set victoria-metrics-k8s-stack.victoria-metrics-k8s-stack-grafana.enabled=true \
@@ -89,18 +89,19 @@ helm upgrade --install victoria-metrics vm/victoria-metrics-k8s-stack \
 
 wait_for_pods monitoring 300
 
-print_status "Step 5/8: Deploying spam2000 application..."
+print_status "Step 5/8: Creating spam2000 namespace..."
 kubectl create namespace spam2000 --dry-run=client -o yaml | kubectl apply -f -
-print_status "Deploying spam2000..."
-helm upgrade --install spam2000 ./helm/spam2000 \
-    --namespace spam2000
-
-wait_for_pods spam2000 180
 
 print_status "Step 6/8: Configuring GitOps with ArgoCD..."
 if [ -f manifests/argocd-app.yaml ]; then
-    print_warning "Skipping ArgoCD application deployment - please update GitHub URL in manifests/argocd-app.yaml"
-    print_warning "After updating the URL, run: kubectl apply -f manifests/argocd-app.yaml"
+    print_status "Applying ArgoCD Application..."
+    kubectl apply -f manifests/argocd-app.yaml || print_warning "ArgoCD application may fail without valid GitHub URL"
+    
+    print_status "Waiting for ArgoCD to sync application..."
+    sleep 10
+    
+    print_status "Waiting for spam2000 pods to be ready..."
+    wait_for_pods spam2000 180
 else
     print_warning "ArgoCD application manifest not found"
 fi
@@ -108,9 +109,7 @@ fi
 print_status "Step 7/8: Configuring Grafana dashboards..."
 kubectl apply -f manifests/grafana-dashboards.yaml
 
-print_status "Step 8/8: Getting ArgoCD admin password..."
-sleep 5
-ARGO_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d 2>/dev/null || echo "Please check: kubectl -n argocd get secret argocd-initial-admin-secret")
+print_status "Step 8/8: Starting port-forward services..."
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -118,20 +117,56 @@ echo -e "${BLUE}✨ Setup Complete! ✨${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "📊 Access ArgoCD:"
-echo "   kubectl port-forward svc/argocd-server -n argocd 8080:443"
 echo "   URL: https://localhost:8080"
 echo "   Username: admin"
-echo "   Password: $ARGO_PASSWORD"
+echo "   Password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=\"{.data.password}\" | base64 -d"
 echo ""
 echo "📈 Access Grafana:"
-echo "   kubectl port-forward svc/grafana -n monitoring 3000:80"
 echo "   URL: http://localhost:3000"
 echo "   Username: admin"
-echo "   Password: admin"
+echo "   Password: kubectl get secret victoria-metrics-grafana -n monitoring -o jsonpath=\"{.data.admin-password}\" | base64 -d"
 echo ""
-echo "🔍 Check application status:"
-echo "   kubectl get pods -n spam2000"
-echo "   kubectl get pods -n monitoring"
+echo "🚀 Access spam2000:"
+echo "   URL: http://localhost:3001"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+print_status "Starting port-forward services..."
+echo ""
+
+# Function to keep port-forward running
+keep_port_forward() {
+    local service=$1
+    local namespace=$2
+    local local_port=$3
+    local target_port=$4
+    local name=$5
+    
+    while true; do
+        kubectl port-forward svc/$service -n $namespace $local_port:$target_port > /dev/null 2>&1
+        sleep 2
+    done
+}
+
+# Start port-forwards in background with auto-restart
+keep_port_forward argocd-server argocd 8080 443 "ArgoCD" &
+keep_port_forward vm-stack-grafana monitoring 3000 80 "Grafana" &
+keep_port_forward spam2000 spam2000 3001 80 "spam2000" &
+
+sleep 2
+
+echo -e "${GREEN}✓${NC} Port-forwards started with auto-restart!"
+echo ""
+echo "💡 Services are now accessible:"
+echo "   • ArgoCD:  https://localhost:8080"
+echo "   • Grafana: http://localhost:3000"
+echo "   • spam2000: http://localhost:3001"
+echo ""
+echo "⚠️  Press Ctrl+C to stop all port-forwards and exit"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Wait for Ctrl+C
+trap 'echo ""; echo "Stopping port-forwards..."; kill $(jobs -p) 2>/dev/null; exit' INT
+wait
 

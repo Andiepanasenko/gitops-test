@@ -1,6 +1,6 @@
 {
-  "title": "Kubernetes Cluster - Complete Overview",
-  "tags": ["kubernetes", "cluster", "overview"],
+  "title": "VictoriaMetrics - Complete Overview",
+  "tags": ["victoriametrics", "vm-k8s-stack", "monitoring"],
   "timezone": "browser",
   "schemaVersion": 16,
   "version": 1,
@@ -8,28 +8,28 @@
   "panels": [
     {
       "id": 1,
-      "title": "Cluster Resources Summary",
+      "title": "VictoriaMetrics Components Status",
       "type": "stat",
       "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0},
       "targets": [
         {
-          "expr": "count(kube_node_info)",
-          "legendFormat": "Nodes",
+          "expr": "count(kube_pod_info{namespace=\"monitoring\", pod=~\"vmagent.*\"})",
+          "legendFormat": "vmagent Pods",
           "refId": "A"
         },
         {
-          "expr": "count(kube_pod_info)",
-          "legendFormat": "Total Pods",
+          "expr": "count(kube_pod_info{namespace=\"monitoring\", pod=~\"vmalert.*\"})",
+          "legendFormat": "vmalert Pods",
           "refId": "B"
         },
         {
-          "expr": "count(kube_pod_status_phase{phase=\"Running\"})",
-          "legendFormat": "Running Pods",
+          "expr": "count(kube_pod_info{namespace=\"monitoring\", pod=~\"vmsingle.*\"})",
+          "legendFormat": "vmsingle Pods",
           "refId": "C"
         },
         {
-          "expr": "count(kube_namespace_labels)",
-          "legendFormat": "Namespaces",
+          "expr": "count(kube_pod_info{namespace=\"monitoring\", pod=~\"vmoperator.*\"})",
+          "legendFormat": "vmoperator Pods",
           "refId": "D"
         }
       ],
@@ -45,14 +45,29 @@
     },
     {
       "id": 2,
-      "title": "Node CPU Usage",
+      "title": "VictoriaMetrics Components - CPU Usage",
       "type": "timeseries",
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
       "targets": [
         {
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\", container!=\"\"}[5m])) by (instance)",
-          "legendFormat": "{{instance}}",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"monitoring\", pod=~\"vmagent.*\"}[5m]))",
+          "legendFormat": "vmagent - CPU",
           "refId": "A"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"monitoring\", pod=~\"vmalert.*\"}[5m]))",
+          "legendFormat": "vmalert - CPU",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"monitoring\", pod=~\"vmsingle.*\"}[5m]))",
+          "legendFormat": "vmsingle - CPU",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"monitoring\", pod=~\"vmoperator.*\"}[5m]))",
+          "legendFormat": "vmoperator - CPU",
+          "refId": "D"
         }
       ],
       "fieldConfig": {
@@ -93,14 +108,29 @@
     },
     {
       "id": 3,
-      "title": "Node Memory Usage",
+      "title": "VictoriaMetrics Components - Memory Usage",
       "type": "timeseries",
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
       "targets": [
         {
-          "expr": "sum(container_memory_working_set_bytes{container!=\"POD\", container!=\"\"}) by (instance)",
-          "legendFormat": "{{instance}}",
+          "expr": "sum(container_memory_working_set_bytes{namespace=\"monitoring\", pod=~\"vmagent.*\"})",
+          "legendFormat": "vmagent - Memory",
           "refId": "A"
+        },
+        {
+          "expr": "sum(container_memory_working_set_bytes{namespace=\"monitoring\", pod=~\"vmalert.*\"})",
+          "legendFormat": "vmalert - Memory",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(container_memory_working_set_bytes{namespace=\"monitoring\", pod=~\"vmsingle.*\"})",
+          "legendFormat": "vmsingle - Memory",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(container_memory_working_set_bytes{namespace=\"monitoring\", pod=~\"vmoperator.*\"})",
+          "legendFormat": "vmoperator - Memory",
+          "refId": "D"
         }
       ],
       "fieldConfig": {
@@ -141,14 +171,29 @@
     },
     {
       "id": 4,
-      "title": "Pod Status by Phase",
+      "title": "VictoriaMetrics Components - Container Restarts",
       "type": "timeseries",
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
       "targets": [
         {
-          "expr": "count by (phase) (kube_pod_status_phase)",
-          "legendFormat": "{{phase}}",
+          "expr": "sum(rate(container_start_time_seconds{namespace=\"monitoring\", pod=~\"vmagent.*\"}[5m]))",
+          "legendFormat": "vmagent - Restarts",
           "refId": "A"
+        },
+        {
+          "expr": "sum(rate(container_start_time_seconds{namespace=\"monitoring\", pod=~\"vmalert.*\"}[5m]))",
+          "legendFormat": "vmalert - Restarts",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(container_start_time_seconds{namespace=\"monitoring\", pod=~\"vmsingle.*\"}[5m]))",
+          "legendFormat": "vmsingle - Restarts",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(rate(container_start_time_seconds{namespace=\"monitoring\", pod=~\"vmoperator.*\"}[5m]))",
+          "legendFormat": "vmoperator - Restarts",
+          "refId": "D"
         }
       ],
       "fieldConfig": {
@@ -189,19 +234,44 @@
     },
     {
       "id": 5,
-      "title": "Pods by Namespace",
+      "title": "VictoriaMetrics Components - Network I/O",
       "type": "timeseries",
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
       "targets": [
         {
-          "expr": "count by (namespace) (kube_pod_info)",
-          "legendFormat": "{{namespace}}",
+          "expr": "sum(rate(container_network_receive_bytes_total{namespace=\"monitoring\", pod=~\"vmagent.*\"}[5m]))",
+          "legendFormat": "vmagent - Receive",
           "refId": "A"
+        },
+        {
+          "expr": "sum(rate(container_network_transmit_bytes_total{namespace=\"monitoring\", pod=~\"vmagent.*\"}[5m]))",
+          "legendFormat": "vmagent - Transmit",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(container_network_receive_bytes_total{namespace=\"monitoring\", pod=~\"vmalert.*\"}[5m]))",
+          "legendFormat": "vmalert - Receive",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(rate(container_network_transmit_bytes_total{namespace=\"monitoring\", pod=~\"vmalert.*\"}[5m]))",
+          "legendFormat": "vmalert - Transmit",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(rate(container_network_receive_bytes_total{namespace=\"monitoring\", pod=~\"vmsingle.*\"}[5m]))",
+          "legendFormat": "vmsingle - Receive",
+          "refId": "E"
+        },
+        {
+          "expr": "sum(rate(container_network_transmit_bytes_total{namespace=\"monitoring\", pod=~\"vmsingle.*\"}[5m]))",
+          "legendFormat": "vmsingle - Transmit",
+          "refId": "F"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "binBps",
           "min": 0,
           "custom": {
             "drawStyle": "line",
@@ -237,14 +307,29 @@
     },
     {
       "id": 6,
-      "title": "Container Restarts",
+      "title": "VictoriaMetrics Components - Pod Status by Phase",
       "type": "timeseries",
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
       "targets": [
         {
-          "expr": "sum(rate(container_start_time_seconds[5m])) by (namespace)",
-          "legendFormat": "{{namespace}}",
+          "expr": "count(kube_pod_status_phase{namespace=\"monitoring\", pod=~\"vmagent.*\"}) by (phase)",
+          "legendFormat": "vmagent - {{phase}}",
           "refId": "A"
+        },
+        {
+          "expr": "count(kube_pod_status_phase{namespace=\"monitoring\", pod=~\"vmalert.*\"}) by (phase)",
+          "legendFormat": "vmalert - {{phase}}",
+          "refId": "B"
+        },
+        {
+          "expr": "count(kube_pod_status_phase{namespace=\"monitoring\", pod=~\"vmsingle.*\"}) by (phase)",
+          "legendFormat": "vmsingle - {{phase}}",
+          "refId": "C"
+        },
+        {
+          "expr": "count(kube_pod_status_phase{namespace=\"monitoring\", pod=~\"vmoperator.*\"}) by (phase)",
+          "legendFormat": "vmoperator - {{phase}}",
+          "refId": "D"
         }
       ],
       "fieldConfig": {
@@ -285,120 +370,44 @@
     },
     {
       "id": 7,
-      "title": "Network I/O",
+      "title": "VictoriaMetrics Components - Disk I/O",
       "type": "timeseries",
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
       "targets": [
         {
-          "expr": "sum(rate(container_network_receive_bytes_total[5m])) by (namespace)",
-          "legendFormat": "{{namespace}} - Receive",
+          "expr": "sum(rate(container_fs_reads_bytes_total{namespace=\"monitoring\", pod=~\"vmagent.*\"}[5m]))",
+          "legendFormat": "vmagent - Read",
           "refId": "A"
         },
         {
-          "expr": "sum(rate(container_network_transmit_bytes_total[5m])) by (namespace)",
-          "legendFormat": "{{namespace}} - Transmit",
+          "expr": "sum(rate(container_fs_writes_bytes_total{namespace=\"monitoring\", pod=~\"vmagent.*\"}[5m]))",
+          "legendFormat": "vmagent - Write",
           "refId": "B"
+        },
+        {
+          "expr": "sum(rate(container_fs_reads_bytes_total{namespace=\"monitoring\", pod=~\"vmalert.*\"}[5m]))",
+          "legendFormat": "vmalert - Read",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(rate(container_fs_writes_bytes_total{namespace=\"monitoring\", pod=~\"vmalert.*\"}[5m]))",
+          "legendFormat": "vmalert - Write",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(rate(container_fs_reads_bytes_total{namespace=\"monitoring\", pod=~\"vmsingle.*\"}[5m]))",
+          "legendFormat": "vmsingle - Read",
+          "refId": "E"
+        },
+        {
+          "expr": "sum(rate(container_fs_writes_bytes_total{namespace=\"monitoring\", pod=~\"vmsingle.*\"}[5m]))",
+          "legendFormat": "vmsingle - Write",
+          "refId": "F"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "unit": "binBps",
-          "min": 0,
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "linear",
-            "barAlignment": 0,
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "spanNulls": false,
-            "insertNulls": false,
-            "showPoints": "never",
-            "pointSize": 5,
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "axisPlacement": "auto",
-            "axisLabel": "",
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          }
-        }
-      }
-    },
-    {
-      "id": 8,
-      "title": "Disk Usage",
-      "type": "timeseries",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 28},
-      "targets": [
-        {
-          "expr": "sum(container_fs_usage_bytes{container!=\"POD\", container!=\"\"}) by (instance)",
-          "legendFormat": "{{instance}}",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "min": 0,
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "linear",
-            "barAlignment": 0,
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "spanNulls": false,
-            "insertNulls": false,
-            "showPoints": "never",
-            "pointSize": 5,
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "axisPlacement": "auto",
-            "axisLabel": "",
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          }
-        }
-      }
-    },
-    {
-      "id": 9,
-      "title": "API Server Requests",
-      "type": "timeseries",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 28},
-      "targets": [
-        {
-          "expr": "sum(rate(apiserver_request_total[5m])) by (verb)",
-          "legendFormat": "{{verb}}",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
           "min": 0,
           "custom": {
             "drawStyle": "line",
