@@ -41,7 +41,7 @@ This project implements a complete GitOps infrastructure that meets all requirem
 | **GitOps** | ArgoCD | Automatic Git synchronization |
 | **Application** | spam2000 | Application that generates metrics |
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -182,32 +182,6 @@ The script will automatically:
    kubectl get pods -n spam2000
    ```
 
-## 📊 Monitoring
-
-### Dashboards
-
-Two pre-configured dashboards are available:
-
-1. **Kubernetes Cluster Overview**
-   - Node CPU Usage
-   - Node Memory Usage
-   - Pod Status
-   - Cluster Stats
-
-2. **spam2000 Application - Golden Signals**
-   - Total Metrics Generated
-   - Active Pods
-   - Pod Status
-   - Pod CPU Usage
-   - Pod Memory Usage
-   - Metrics Rate
-   - Container Restarts
-
-### Metrics
-
-Application automatically exports metrics in Prometheus format:
-- `random_gauge_1` - Random gauge metric with labels
-- `random_gauge_2` - Random gauge metric with labels
 
 ## Project Structure
 
@@ -236,24 +210,6 @@ gitops-test/
     └── victoriametrics-complete.json # VictoriaMetrics dashboard
 ```
 
-## Configuration
-
-### Changing spam2000 Parameters
-
-Edit `helm/spam2000/values.yaml`:
-
-```yaml
-replicas: 2                    # Number of application copies
-env:
-  requestRate: "10"            # Request intensity
-resources:
-  requests:
-    memory: "128Mi"
-    cpu: "100m"
-  limits:
-    memory: "256Mi"
-    cpu: "200m"
-```
 
 ### Update via GitOps
 
