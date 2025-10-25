@@ -4,18 +4,18 @@ data:
     {
       "title": "Kubernetes Cluster - Complete Overview",
       "tags": ["kubernetes", "cluster", "overview"],
-      "timezone": "browser",
-      "schemaVersion": 16,
-      "version": 1,
-      "refresh": "30s",
-      "panels": [
-        {
-          "id": 1,
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
           "title": "Cluster Resources Summary",
           "type": "stat",
           "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0},
-          "targets": [
-            {
+            "targets": [
+              {
               "expr": "count(kube_node_info)",
               "legendFormat": "Nodes",
               "refId": "A"
@@ -45,14 +45,14 @@ data:
               }
             }
           }
-        },
-        {
-          "id": 2,
+          },
+          {
+            "id": 2,
           "title": "Node CPU Usage",
           "type": "timeseries",
           "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
-          "targets": [
-            {
+            "targets": [
+              {
               "expr": "sum(rate(container_cpu_usage_seconds_total{container!=\"POD\", container!=\"\"}[5m])) by (instance)",
               "legendFormat": "{{instance}}",
               "refId": "A"
@@ -93,14 +93,14 @@ data:
               }
             }
           }
-        },
-        {
-          "id": 3,
+          },
+          {
+            "id": 3,
           "title": "Node Memory Usage",
           "type": "timeseries",
           "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
-          "targets": [
-            {
+            "targets": [
+              {
               "expr": "sum(container_memory_working_set_bytes{container!=\"POD\", container!=\"\"}) by (instance)",
               "legendFormat": "{{instance}}",
               "refId": "A"
@@ -141,14 +141,14 @@ data:
               }
             }
           }
-        },
-        {
-          "id": 4,
+          },
+          {
+            "id": 4,
           "title": "Pod Status by Phase",
           "type": "timeseries",
           "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
-          "targets": [
-            {
+            "targets": [
+              {
               "expr": "count by (phase) (kube_pod_status_phase)",
               "legendFormat": "{{phase}}",
               "refId": "A"
@@ -441,18 +441,18 @@ data:
     {
       "title": "spam2000 Application - Golden Signals",
       "tags": ["spam2000", "application", "golden-signals"],
-      "timezone": "browser",
-      "schemaVersion": 16,
-      "version": 1,
-      "refresh": "30s",
-      "panels": [
-        {
-          "id": 1,
+        "timezone": "browser",
+        "schemaVersion": 16,
+        "version": 1,
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
           "title": "Application Overview",
           "type": "stat",
           "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0},
-          "targets": [
-            {
+            "targets": [
+              {
               "expr": "count(kube_pod_info{namespace=\"spam2000\"})",
               "legendFormat": "Total Pods",
               "refId": "A",
@@ -486,14 +486,14 @@ data:
               }
             }
           }
-        },
-        {
-          "id": 2,
+          },
+          {
+            "id": 2,
           "title": "OOM Killer & Failed Pods",
           "type": "timeseries",
           "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
-                   "targets": [
-                     {
+            "targets": [
+              {
                        "expr": "count(kube_pod_info{namespace=\"spam2000\"} * on(pod) kube_pod_status_phase{namespace=\"spam2000\", phase=\"Failed\"})",
                        "legendFormat": "Failed Pods",
                        "refId": "A"
@@ -539,14 +539,14 @@ data:
               }
             }
           }
-        },
-        {
-          "id": 3,
-          "title": "Pod CPU Usage",
+          },
+          {
+            "id": 3,
+            "title": "Pod CPU Usage",
           "type": "timeseries",
           "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
-          "targets": [
-            {
+            "targets": [
+              {
               "expr": "rate(container_cpu_usage_seconds_total{namespace=\"spam2000\", container!=\"POD\", container!=\"\"}[5m])",
               "legendFormat": "{{pod}} - {{container}}",
               "refId": "A"
@@ -587,14 +587,14 @@ data:
               }
             }
           }
-        },
-        {
-          "id": 4,
-          "title": "Pod Memory Usage",
+          },
+          {
+            "id": 4,
+            "title": "Pod Memory Usage",
           "type": "timeseries",
           "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
-          "targets": [
-            {
+            "targets": [
+              {
               "expr": "container_memory_working_set_bytes{namespace=\"spam2000\", container!=\"POD\", container!=\"\"}",
               "legendFormat": "{{pod}} - {{container}}",
               "refId": "A"
@@ -688,14 +688,14 @@ data:
               }
             }
           }
-        },
-        {
-          "id": 5,
+          },
+          {
+            "id": 5,
           "title": "Memory Requests vs Limits",
           "type": "timeseries",
           "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
-          "targets": [
-            {
+            "targets": [
+              {
               "expr": "kube_pod_container_resource_requests{namespace=\"spam2000\", resource=\"memory\"}",
               "legendFormat": "{{pod}} - Memory Request",
               "refId": "A"
